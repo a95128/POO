@@ -36,15 +36,12 @@ public class Transportadora implements Serializable {
         return preco;
     }
 
-    /*
     public double precoFINAL(Encomenda e) {
         double precoinic = e.calcularPrecoEnc();
         double precoFINAL = 0.0;
         precoFINAL = precoinic + calculaprecoexp(e.getNrArtigosPorCategoria(false),false) + calculaprecoexp(e.getNrArtigosPorCategoria(true), true);
         return precoFINAL;
     }
-
-     */
 
     public boolean equals(Object o){
         if (this==o) return true;

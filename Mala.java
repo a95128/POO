@@ -3,13 +3,40 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class Mala extends Artigo {
+    /*
+    public static class Dimensao {
+        private double largura;
+        private double altura;
+
+        public Dimensao() {
+            this.largura = 0.0;
+            this.altura = 0.0;
+        }
+
+
+
+        public Dimensao(double largura, double altura) {
+            this.largura = largura;
+            this.altura = altura;
+        }
+        public double getLargura() {return largura;}
+        public void setLargura(double largura) {this.largura = largura;}
+        public double getAltura() {return altura;}
+        public void setAltura(double altura) {this.altura = altura;}
+
+    }
+    */
+
+    //private Dimensao dimensao;
     private double largura;
+
     private double altura;
     private String material;
     public Mala() {
         super();
         this.largura = 0.0;
         this.altura = 0.0;
+       // this.dimensao = new Dimensao();
         this.material = "";
     }
 
@@ -17,11 +44,13 @@ public class Mala extends Artigo {
         super(a);
         this.largura = a.getLargura();
         this.altura = a.getAltura();
+        //this.dimensao = a.getMDimensao();
         this.material = a.getMMaterial();
     }
 
     public Mala(Transportadora t, String descricao, String m, double p, double des, LocalDate da, double a, int d, Boolean c, double largura, double altura, String mt) {
         super(t,descricao,m,p,des,da,a,d,c);
+        //this.dimensao=dimensao;
         this.largura = largura;
         this.altura=altura;
     }
@@ -30,6 +59,8 @@ public class Mala extends Artigo {
     public void setLargura(double largura) {this.largura=largura;}
     public double getAltura() {return this.altura;}
     public void setAltura(double altura) {this.altura=altura;}
+    //public Dimensao getMDimensao() {return this.dimensao;}
+    //public void setMDimensao(double largura, double altura) {this.dimensao= new Dimensao(largura,altura);}
     public String getMMaterial() {return this.material;}
     public void setMMaterial(String b) {this.material=b;}
 
@@ -77,6 +108,6 @@ public class Mala extends Artigo {
         return super.toString() +
                 " Largura: " + largura +
                 " Altura: " + altura +
-                " Material: " + material;
+                " Material: " + material ;
     }
 }

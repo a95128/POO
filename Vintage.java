@@ -1,7 +1,7 @@
 import java.io.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 
 
 public class Vintage implements Serializable {
@@ -9,7 +9,8 @@ public class Vintage implements Serializable {
     private Map<String, Artigo> artigos;
     private Map<String, Encomenda> encomendas; //FAZ MAIS SENTIDO TER UM UTILIZADOR que vendeu
     private Map<String, Transportadora> transportadoras;
-    private List<Artigo> compras;
+    private List<Artigo> comprar;
+    private final DataUtilizador dataUtilizadorAtivo;
 
 
     public Vintage() {
@@ -18,14 +19,20 @@ public class Vintage implements Serializable {
         this.encomendas = new HashMap<>();
         this.artigos = new HashMap<>();
         this.transportadoras = new HashMap<>();
-        this.compras = new ArrayList<>();
+        this.comprar = new ArrayList<>();
+        this.dataUtilizadorAtivo = new DataUtilizador();
     }
 
-    public Vintage(Map<String, Utilizador> u, Map<String, Encomenda> e, Map<String, Artigo> a, Map<String, Transportadora> t) {
+    public Vintage(Map<String, Utilizador> u,
+                   Map<String, Encomenda> e,
+                   Map<String, Artigo> a,
+                   Map<String, Transportadora> t,
+                   DataUtilizador d) {
         this.users = u;
         this.encomendas = e;
         this.artigos = a;
         this.transportadoras = t;
+        this.dataUtilizadorAtivo = d;
     }
 
     public Vintage(Vintage v) {
@@ -33,7 +40,8 @@ public class Vintage implements Serializable {
         this.encomendas = v.getEncomendas(); // Copia a lista de encomendas do objeto Vintage original
         this.artigos = v.getArtigos(); // Copia a lista de artigos do objeto Vintage original
         this.transportadoras = v.getTransportadoras(); // Copia a lista de transportadoras do objeto Vintage original
-        this.compras = new ArrayList<>(v.getComprar());
+        this.comprar = new ArrayList<>(v.getComprar());
+        this.dataUtilizadorAtivo = v.dataUtilizadorAtivo;
     }
 
     public Map<String, Utilizador> getUtilizadores() {
@@ -69,11 +77,11 @@ public class Vintage implements Serializable {
     }
 
     public List<Artigo> getComprar() {
-        return this.compras;
+        return this.comprar;
     }
 
     public void setComprar(List<Artigo> compras) {
-        this.compras = compras;
+        this.comprar = compras;
     }
 
     public void addUtilizador(Utilizador u) {
@@ -95,14 +103,6 @@ public class Vintage implements Serializable {
     public void addArtigoAVenda(Artigo a, String user) {
         Utilizador util = this.users.get(user);
         util.adicionarProdutoAVenda(a);
-        //System.out.println(util.getProdutosAVenda());
-    }
-
-    public void addContaArtigoAquirido(Encomenda e,String u) {
-        Utilizador util = this.users.get(u);
-        for(Artigo a : e.getArtigos()) {
-            util.adicionarProdutoAdquirido(a);
-        }
     }
 
     public void addVenda(Artigo a, String user) {
@@ -115,28 +115,24 @@ public class Vintage implements Serializable {
         util.adicionarProdutoAdquirido(a);
     }
 
-    public void addCarrinho(List<Artigo> artigos, String user) {
+    public void addCarrinho(Artigo a, String user) {
         Utilizador util = this.users.get(user);
-        for (Artigo a : artigos) {
-            util.adicionarCarrinho(a);
-        }
+        util.adicionarCarrinho(a);
     }
 
-
-    public List<Artigo> deleteCarrinho(Artigo a) {
-        List<Artigo> comprass = new ArrayList<>();
-        for(Artigo b : compras) {
-            if(!b.equals(a)) comprass.add(b.clone());
+    public void addContaArtigoAquirido(Encomenda e,String u) {
+        Utilizador util = this.users.get(u);
+        for(Artigo a : e.getArtigos()) {
+            util.adicionarProdutoAdquirido(a);
         }
-       return comprass;
     }
-
 
     public void deleteUtilizadores(Utilizador u) {
         this.users.remove(u);
     }
 
-    public Utilizador autenticarUtilizador(String email, String senha) throws UtilizadorException {
+    public Utilizador autenticarUtilizador(String email, String senha) throws UtilizadorException
+    {
         if (users.containsKey(email)) {
             Utilizador u = users.get(email);
             if (u.getPassword().equals(senha)) {
@@ -152,24 +148,52 @@ public class Vintage implements Serializable {
     public void efectCompra(String id, Utilizador u) {
         if (getArtigos().containsKey(id)) {
             Artigo a = getArtigos().get(id);
-            if (a == null) {
-                System.out.println("Artigo não encontrado.");
-            } else {
-                ArrayList<Artigo> artigos = new ArrayList<>();
-                addCarrinho(artigos, u.getEmail());
-                System.out.println("Artigo adicionado ao carrinho.");
-            }
-
+            addCarrinho(a, u.getEmail());
+            getArtigos().remove(a);
+        } else {
+            System.out.println("ARTIGO NÃO ENCONTRADO!");
         }
     }
 
+    public boolean devolucao(String id, Utilizador comprador)
+    {
+        Encomenda encomenda = comprador.getEncomendaByID(id);
 
-    public void VerifUtilizador(String id) {
-        if (users.containsKey(id)) {
-            getUtilizadores().get(id);
-        } else System.out.println("O UTILIZADOR NÃO EXISTE!");
+        // ver se a encomenda existe
+        if(encomenda !=  null)
+        {
+            // se existe, verificar se se pode devolver (feita à menos de dois dias)
+            if(encomenda.devolve(this.dataUtilizadorAtivo))
+            {
+                List<Artigo> artigosComprados = encomenda.getArtigos();
 
+                // remover dos artigos comprados pelo comprador
+                artigosComprados.forEach(comprador::removeArtigoComprado);
+                // remover das encomendas feitas pelo comprador
+                comprador.removeEncomenda(encomenda);
+                // passar os artigos de "vendidos" para "à venda"
+                for(Artigo artigo : artigosComprados)
+                {
+                    // procurar o vendedor que vendeu este artigo
+                    // faria mais sentido se a encomenda viesse identificada com o vendedor que a vendeu e com o user
+                    // que a comprou
+                    for(Utilizador u : this.users.values())
+                    {
+                        if(u.vendeuArtigo(artigo))
+                        {
+                            // remover dos artigos vendidos e adicionar aos artigos à venda
+                            u.renovarVenda(artigo);
+                            break;
+                        }
+                    }
+                }
+                return true;
+            }
+            else return false;
+        }
+        else return false;
     }
+
 
     public void pagamento(Utilizador u, Encomenda e) {
         double res = 0.0;
@@ -221,11 +245,23 @@ public class Vintage implements Serializable {
 
     }
 
+    public void setDiasNoFuturo(int diasNoFuturo)
+    {
+        this.dataUtilizadorAtivo.setData(diasNoFuturo);
+    }
 
+    public String dataPercebida()
+    {
+        return this.dataUtilizadorAtivo.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    public void resetData()
+    {
+        this.dataUtilizadorAtivo.resetData();
+    }
 
 
     // ESTATISTICAS
-
 
     public Utilizador vendedorMaisFaturou(LocalDate inicio, LocalDate fim) {
         // Calcula o total de vendas de cada vendedor
@@ -256,17 +292,17 @@ public class Vintage implements Serializable {
         return vendedorMaisFaturou;
     }
 
-    /*
     public Transportadora TransportadoraMaisFacturou() {
         Map<Transportadora, Double> vendasportransportadora = new HashMap<>();
-        for (Utilizador u: users.values()) {
-            for (Artigo a : u.getProdutosAdquiridos()) {
-
-                    double valor = a.getPreco();
+        for (Encomenda e : encomendas.values()) {
+            if (e.getEstado().equalsIgnoreCase("finalizada")) {
+                for (Artigo a : e.getArtigos()) {
+                    double valor = a.getTransportadora().precoFINAL(e);
                     Transportadora t = a.getTransportadora();
                     vendasportransportadora.put(t, vendasportransportadora.getOrDefault(t, 0.0) + valor);
                 }
             }
+
         }
         Transportadora transportadoraMaisFaturou = null;
         double maiorValor = 0.0;
@@ -282,7 +318,6 @@ public class Vintage implements Serializable {
         return transportadoraMaisFaturou;
 
     }
-    */
 
     public List<Map.Entry<Utilizador, Double>> maioresCompradores(LocalDate inicio, LocalDate fim) {
         // Calcula o total de vendas de cada vendedor
@@ -324,4 +359,17 @@ public class Vintage implements Serializable {
         return vendasTotais;
     }
 
-}
+    public double LucroVintage() {
+        double res = 0.0;
+        for (Encomenda e : encomendas.values()) {
+            res += e.getPrecof();
+        }
+
+        return res;
+    }
+    }
+
+
+
+
+

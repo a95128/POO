@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Encomenda implements Serializable {
@@ -75,19 +76,6 @@ public class Encomenda implements Serializable {
     }
 
 
-    public double calcularPrecoEnc() {
-        double preco = 0.0;
-        int novos = 0;
-        int usados = 0;
-        for (Artigo artigo : this.artigos) {
-            preco += artigo.calculaPreco();
-            if (artigo.getDonos() == 1) novos++;
-            else usados++;
-        }
-        preco += novos*TSN + usados*TSU;
-        return preco;
-    }
-
     public double precoFINAL() {
 
         double precoinic = calcularPrecoEnc();
@@ -102,6 +90,25 @@ public class Encomenda implements Serializable {
     // Método para verificar se é possivel devolver uma encomenda
     public boolean devolve() {
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime twoDaysAgo = now.minusHours(48);
+        return data.isAfter(twoDaysAgo) && data.isBefore(now);
+    }
+    public double calcularPrecoEnc() {
+        double preco = 0.0;
+        int novos = 0;
+        int usados = 0;
+        for (Artigo artigo : this.artigos) {
+            preco += artigo.calculaPreco();
+            if (artigo.getDonos() == 1) novos++;
+            else usados++;
+        }
+        preco += novos*TSN + usados*TSU;
+        return preco;
+    }
+
+    // Método para verificar se é possivel devolver uma encomenda
+    public boolean devolve(DataUtilizador dataUtilizador) {
+        LocalDateTime now = dataUtilizador.now();
         LocalDateTime twoDaysAgo = now.minusHours(48);
         return data.isAfter(twoDaysAgo) && data.isBefore(now);
     }
@@ -127,10 +134,23 @@ public class Encomenda implements Serializable {
         }
         else {
             sb.append("\nNenhum artigo encontrado.").append("\nPreço Final: 0")
-            .append("\nEstado: Não definido");
+                    .append("\nEstado: Não definido");
         }
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Encomenda encomenda = (Encomenda) o;
+        return Double.compare(encomenda.preco_final, preco_final) == 0 && Objects.equals(id, encomenda.id) && Objects.equals(artigos, encomenda.artigos) && Objects.equals(estado, encomenda.estado) && Objects.equals(data, encomenda.data);
+    }
 
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, artigos, preco_final, estado, data);
+    }
 }

@@ -1,5 +1,7 @@
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 //ADICIONAR SALDO
 public class Utilizador implements Serializable {
@@ -14,8 +16,7 @@ public class Utilizador implements Serializable {
     private List<Artigo> produtosAdquiridos;
     private List<Artigo> vendas;
     private List<Artigo> carrinho;
-
-    //private Map<String, Encomenda> encomendas;
+    private List<Encomenda> encomendasFinalizadas;
 
     public Utilizador() {
         this.id = UUID.randomUUID();
@@ -29,10 +30,11 @@ public class Utilizador implements Serializable {
         this.produtosAdquiridos = new ArrayList<>();
         this.vendas = new ArrayList<>();
         this.carrinho = new ArrayList<>();
-        //this.encomendas = new HashMap<>();
+        this.encomendasFinalizadas = new ArrayList<>();
     }
 
-    public Utilizador (String e, String n, String m, int NIF,String p, double s, List<Artigo> a, List<Artigo> b, List<Artigo> d, List<Artigo> c) {
+    public Utilizador (String e, String n, String m, int NIF,String p, double s, List<Artigo> a, List<Artigo> b,
+                       List<Artigo> d, List<Artigo> c, List<Encomenda> ef) {
         this.id = UUID.randomUUID();
         this.email = e;
         this.nome = n;
@@ -44,22 +46,22 @@ public class Utilizador implements Serializable {
         this.produtosAdquiridos = b;
         this.vendas = d;
         this.carrinho = c;
-        //this.encomendas = enc;
+        this.encomendasFinalizadas = ef;
     }
 
-        public Utilizador(Utilizador a){
-            this.id = a.getId();
-            this.email = a.getEmail();
-            this.nome = a.getNome();
-            this.morada = a.getMorada();
-            this.NIF = a.getNIF();
-            this.password = a.getPassword();
-            this.saldo = a.getSaldo();
-            this.produtosAVenda = a.getProdutosAVenda();
-            this.produtosAdquiridos = a.getProdutosAdquiridos();
-            this.vendas = a.getVendas();
-            this.carrinho = a.getCarrinho();
-            //this.encomendas = a.getEncomendas();
+    public Utilizador(Utilizador a){
+        this.id = a.getId();
+        this.email = a.getEmail();
+        this.nome = a.getNome();
+        this.morada = a.getMorada();
+        this.NIF = a.getNIF();
+        this.password = a.getPassword();
+        this.saldo = a.getSaldo();
+        this.produtosAVenda = a.getProdutosAVenda();
+        this.produtosAdquiridos = a.getProdutosAdquiridos();
+        this.vendas = a.getVendas();
+        this.carrinho = a.getCarrinho();
+        this.encomendasFinalizadas = a.getEncomendasFinalizadas();
     }
 
 
@@ -83,23 +85,19 @@ public class Utilizador implements Serializable {
     public void setProdutosAdquiridos(List<Artigo> pa) {this.produtosAdquiridos = pa;}
     public List<Artigo> getVendas() {return this.vendas;}
     public void setVendas(List<Artigo> vendas) {this.vendas = vendas;}
-/*
-    public Map<String, Encomenda> getEncomendas() {
-        return this.encomendas;
+    public List<Encomenda> getEncomendasFinalizadas()
+    {
+        return encomendasFinalizadas;
     }
-
-    public void setEncomendas(Map<String, Encomenda> encomendas) {
-        this.encomendas = encomendas;
+    public void setEncomendasFinalizadas(List<Encomenda> encomendasFinalizadas) {
+        this.encomendasFinalizadas = encomendasFinalizadas;
     }
-    */
-
 
     public List<Artigo> getCarrinho() {return this.carrinho;}
     public void setCarrinho(List<Artigo> carrinho) {this.carrinho = carrinho;}
     public void adicionarProdutoAVenda(Artigo p) {
-        //System.out.println(p);
-        this.produtosAVenda.add(p.clone());
-    }
+        System.out.println(p);
+        this.produtosAVenda.add(p.clone());}
     public List<Artigo> adicionarProdutoAdquirido(Artigo p) {this.produtosAdquiridos.add(p.clone());
         return this.produtosAdquiridos;
     }
@@ -114,7 +112,25 @@ public class Utilizador implements Serializable {
         return this.carrinho;
     }
 
-    //public Map<String,Encomenda> adicionarEncomenda (Encomenda e) {this.encomendas.put(e.getId(),e);}
+
+
+    public Utilizador clone() {return new Utilizador(this);}
+
+
+    /*
+        public boolean autenticarUsuario(String email, String senha, Map<String, String> hashusers) {
+            if (hashusers.containsKey(email) && hashusers.get(email).equals(senha)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    */
+    // devolve null se não existir
+    public Encomenda getEncomendaByID(String id)
+    {
+        return this.encomendasFinalizadas.stream().filter(e -> e.getId().equals(id)).findFirst().orElse(null);
+    }
 
     public List<Artigo> removeCarrinho (String a ) {
         for (Artigo b : this.carrinho) {
@@ -125,35 +141,40 @@ public class Utilizador implements Serializable {
         return this.carrinho;
     }
 
-
-    public double getTotalCarrinho(List<Artigo> a ) {
-        double res = 0.0;
-        for (Artigo b : a) {
-            res += b.getPreco();
-        }
-        return res;
+    public void removeArtigoComprado(Artigo a)
+    {
+        this.produtosAdquiridos.remove(a);
     }
 
+    public void removeEncomenda(Encomenda e)
+    {
+        this.encomendasFinalizadas.remove(e);
+    }
 
+    public boolean vendeuArtigo(Artigo a)
+    {
+        return this.vendas.contains(a);
+    }
 
-
-    public Utilizador clone() {return new Utilizador(this);}
-
+    public void renovarVenda(Artigo a)
+    {
+        if (this.vendas.remove(a)) this.produtosAVenda.add(a);
+    }
 
     public boolean equals(Object o ) {
-            if(this == o) return true;
-            if ((o == null) || (this.getClass() != o.getClass())) return false;
-            Utilizador u = (Utilizador) o;
-            return(super.equals(u) & this.id==(u.getId()))
-                                   & this.email.equals(u.getEmail())
-                                   & this.nome.equals(u.getNome())
-                                   & this.morada.equals(u.getMorada())
-                                   & this.NIF==u.getNIF()
-                                   & this.saldo==u.getSaldo()
-                                   & this.produtosAVenda.equals(u.getProdutosAVenda())
-                                   & this.produtosAdquiridos.equals(u.getProdutosAdquiridos())
-                                   & this.vendas.equals(u.getVendas());
-        }
+        if(this == o) return true;
+        if ((o == null) || (this.getClass() != o.getClass())) return false;
+        Utilizador u = (Utilizador) o;
+        return(super.equals(u) & this.id==(u.getId()))
+                & this.email.equals(u.getEmail())
+                & this.nome.equals(u.getNome())
+                & this.morada.equals(u.getMorada())
+                & this.NIF==u.getNIF()
+                & this.saldo==u.getSaldo()
+                & this.produtosAVenda.equals(u.getProdutosAVenda())
+                & this.produtosAdquiridos.equals(u.getProdutosAdquiridos())
+                & this.vendas.equals(u.getVendas());
+    }
 
     public String toString () {
         StringBuilder sb = new StringBuilder();
@@ -165,33 +186,25 @@ public class Utilizador implements Serializable {
                 .append("\nSaldo: ").append(this.saldo)
 
                 .append("\n[PRODUTOS A VENDA]: ");
-                if (this.produtosAVenda != null) {
-                    for (Artigo artigo : this.produtosAVenda) {
-                        sb.append("\n").append(artigo);
-                    }
-                }
+        if (this.produtosAVenda != null) {
+            for (Artigo artigo : this.produtosAVenda) {
+                sb.append("\n").append(artigo);
+            }
+        }
 
-                sb.append("\n[PRODUTOS ADQUIRIDOS]: ");
-                if (this.produtosAdquiridos != null) {
-                    for (Artigo artigo : this.produtosAdquiridos) {
-                        sb.append("\n").append(artigo);
-                    }
-                }
+        sb.append("\n[PRODUTOS ADQUIRIDOS]: ");
+        if (this.produtosAdquiridos != null) {
+            for (Artigo artigo : this.produtosAdquiridos) {
+                sb.append("\n").append(artigo);
+            }
+        }
 
-               sb.append("\n[PRODUTOS VENDAS]: ");
-               if (this.vendas != null) {
-                   for (Artigo artigo : this.vendas) {
-                       sb.append("\n").append(artigo);
-                   }
-               }
-
-               sb.append("\n[CARRINHO]:");
-               if (this.carrinho != null) {
-               for(Artigo artigo : this.carrinho) {
-               sb.append("\n").append(artigo);
-               }
-               }
-
+        sb.append("\n[PRODUTOS VENDAS]: ");
+        if (this.vendas != null) {
+            for (Artigo artigo : this.vendas) {
+                sb.append("\n").append(artigo);
+            }
+        }
 
         return sb.toString();
     }
