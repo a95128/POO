@@ -9,7 +9,7 @@ public class Vintage implements Serializable {
     private Map<String, Artigo> artigos;
     private Map<String, Encomenda> encomendas; //FAZ MAIS SENTIDO TER UM UTILIZADOR que vendeu
     private Map<String, Transportadora> transportadoras;
-    private List<Artigo> comprar;
+    private List<Artigo> compras;
 
 
     public Vintage() {
@@ -18,7 +18,7 @@ public class Vintage implements Serializable {
         this.encomendas = new HashMap<>();
         this.artigos = new HashMap<>();
         this.transportadoras = new HashMap<>();
-        this.comprar = new ArrayList<>();
+        this.compras = new ArrayList<>();
     }
 
     public Vintage(Map<String, Utilizador> u, Map<String, Encomenda> e, Map<String, Artigo> a, Map<String, Transportadora> t) {
@@ -33,7 +33,7 @@ public class Vintage implements Serializable {
         this.encomendas = v.getEncomendas(); // Copia a lista de encomendas do objeto Vintage original
         this.artigos = v.getArtigos(); // Copia a lista de artigos do objeto Vintage original
         this.transportadoras = v.getTransportadoras(); // Copia a lista de transportadoras do objeto Vintage original
-        this.comprar = new ArrayList<>(v.getComprar());
+        this.compras = new ArrayList<>(v.getComprar());
     }
 
     public Map<String, Utilizador> getUtilizadores() {
@@ -69,11 +69,11 @@ public class Vintage implements Serializable {
     }
 
     public List<Artigo> getComprar() {
-        return this.comprar;
+        return this.compras;
     }
 
     public void setComprar(List<Artigo> compras) {
-        this.comprar = compras;
+        this.compras = compras;
     }
 
     public void addUtilizador(Utilizador u) {
@@ -95,6 +95,7 @@ public class Vintage implements Serializable {
     public void addArtigoAVenda(Artigo a, String user) {
         Utilizador util = this.users.get(user);
         util.adicionarProdutoAVenda(a);
+        //System.out.println(util.getProdutosAVenda());
     }
 
     public void addVenda(Artigo a, String user) {
@@ -107,10 +108,21 @@ public class Vintage implements Serializable {
         util.adicionarProdutoAdquirido(a);
     }
 
-    public void addCarrinho(Artigo a, String user) {
+    public void addCarrinho(List<Artigo> artigos, String user) {
         Utilizador util = this.users.get(user);
-        util.adicionarCarrinho(a);
+        for (Artigo a : artigos) {
+            util.adicionarCarrinho(a);
+        }
     }
+
+    public List<Artigo> deleteCarrinho(Artigo a) {
+        List<Artigo> comprass = new ArrayList<>();
+        for(Artigo b : compras) {
+            if(!b.equals(a)) comprass.add(b.clone());
+        }
+       return comprass;
+    }
+
 
     public void deleteUtilizadores(Utilizador u) {
         this.users.remove(u);
@@ -132,10 +144,14 @@ public class Vintage implements Serializable {
     public void efectCompra(String id, Utilizador u) {
         if (getArtigos().containsKey(id)) {
             Artigo a = getArtigos().get(id);
-            addCarrinho(a, u.getEmail());
-            getArtigos().remove(a);
-        } else {
-            System.out.println("ARTIGO NÃO ENCONTRADO!");
+            if (a == null) {
+                System.out.println("Artigo não encontrado.");
+            } else {
+                ArrayList<Artigo> artigos = new ArrayList<>();
+                addCarrinho(artigos, u.getEmail());
+                System.out.println("Artigo adicionado ao carrinho.");
+            }
+
         }
     }
 
@@ -184,7 +200,10 @@ public class Vintage implements Serializable {
 
     }
 
+
+
     // ESTATISTICAS
+
 
     public Utilizador vendedorMaisFaturou(LocalDate inicio, LocalDate fim) {
         // Calcula o total de vendas de cada vendedor
@@ -215,17 +234,17 @@ public class Vintage implements Serializable {
         return vendedorMaisFaturou;
     }
 
+    /*
     public Transportadora TransportadoraMaisFacturou() {
         Map<Transportadora, Double> vendasportransportadora = new HashMap<>();
-        for (Encomenda e : encomendas.values()) {
-            if (e.getEstado().equalsIgnoreCase("finalizada")) {
-                for (Artigo a : e.getArtigos()) {
-                    double valor = a.getTransportadora().precoFINAL(e);
+        for (Utilizador u: users.values()) {
+            for (Artigo a : u.getProdutosAdquiridos()) {
+
+                    double valor = a.getPreco();
                     Transportadora t = a.getTransportadora();
                     vendasportransportadora.put(t, vendasportransportadora.getOrDefault(t, 0.0) + valor);
                 }
             }
-
         }
         Transportadora transportadoraMaisFaturou = null;
         double maiorValor = 0.0;
@@ -241,6 +260,7 @@ public class Vintage implements Serializable {
         return transportadoraMaisFaturou;
 
     }
+    */
 
     public List<Map.Entry<Utilizador, Double>> maioresCompradores(LocalDate inicio, LocalDate fim) {
         // Calcula o total de vendas de cada vendedor

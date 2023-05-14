@@ -23,7 +23,7 @@ public class SCRIPT {
         Sapatilha s7 = new Sapatilha(t4, "Sapatilhas brancas", "Vans", 75.0, 10.0, LocalDate.of(2023, 5, 13), 2.0, 3, false, 42.0, "Atacadores", "Branco");
 
         TShirt tshirt1 = new TShirt(t1, "Camisola verde", "Zara", 20.0, 10, LocalDate.of(2023, 4, 10), 2.0, 4, true, "S", "liSo");
-        Mala m1 = new Mala(t1, "Prada basic", "Prada", 10500.0, 0.0, LocalDate.of(2020, 4, 10), 10.0, 1, true, 5.0, 3.0, "Pele");
+        //Mala m1 = new Mala(t1, "Prada basic", "Prada", 10500.0, 0.0, LocalDate.of(2020, 4, 10), 10.0, 1, true, 5.0, 3.0, "Pele");
 
         Utilizador u1 = new Utilizador("ajrochaalves@gmail.com", "Ana", "Rua Nova", 12554, "123", 0.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
         Utilizador u2 = new Utilizador("simao@gmail.com", "Simao", "yuhaobd", 1234, "afdsfgfsdf", 10.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
@@ -41,7 +41,7 @@ public class SCRIPT {
         u1.getVendas().add(s5);
         u1.getVendas().add(s6);
 
-        u1.getProdutosAdquiridos().add(m1);
+        //u1.getProdutosAdquiridos().add(m1);
         u1.getProdutosAdquiridos().add(s1);
         u1.getProdutosAdquiridos().add(s7);
 
@@ -62,7 +62,7 @@ public class SCRIPT {
         v.addArtigo(s6);
         v.addArtigo(s7);
         v.addArtigo(tshirt1);
-        v.addArtigo(m1);
+        //v.addArtigo(m1);
 
         return v;
     }

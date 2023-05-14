@@ -2,6 +2,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -11,7 +12,7 @@ public class MENUS {
 
         Scanner sc = new Scanner(System.in);
         Utilizador user;
-        Vintage v = putLogin();
+       Vintage v = putLogin();
 
         System.out.println("-------------BEM-VINDO À VINTED!----------");
         System.out.println("1-LOGIN");
@@ -29,6 +30,7 @@ public class MENUS {
 
                 try {
                     user = v.autenticarUtilizador(a, b);
+                    //v.store_state();
                     MENUPRINC(v, user);
                     v.store_state();
 
@@ -40,33 +42,46 @@ public class MENUS {
 
             }
             case 2 -> {
-                System.out.println("MAIL:");
-                String n1 = sc.next();
-                System.out.println("NOME:");
-                String n2 = sc.next();
-                System.out.println("MORADA:");
-                String n3 = sc.next();
-                System.out.println("NIF:");
-                int n4 = sc.nextInt();
-                System.out.println("PASSWORD:");
-                String n5 = sc.next();
-                System.out.println("CONFIRME PASSWORD:");
-                String n6 = sc.next();
-                if (!n5.equals(n6)) {
-                    System.out.println("PALAVRA-PASSE INCORRETA");
-                } else {
-                    user = new Utilizador(n1, n2, n3, n4, n6, 0.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
-                    v.addUtilizador(user);
-                    System.out.println("CONTA CRIADA COM SUCESSO!");
-                    MENUPRINC(v, user);
-                    v.store_state();
+                try {
+                    System.out.println("MAIL:");
+                    String n1 = sc.next();
+                    System.out.println("NOME:");
+                    String n2 = sc.next();
+                    System.out.println("MORADA:");
+                    String n3 = sc.next();
+                    System.out.println("NIF:");
+                    int n4 = sc.nextInt();
+                    System.out.println("PASSWORD:");
+                    String n5 = sc.next();
+                    System.out.println("CONFIRME PASSWORD:");
+                    String n6 = sc.next();
+                    if (!n5.equals(n6)) {
+                        System.out.println("PALAVRA-PASSE INCORRETA");
+                    } else {
+                        user = new Utilizador(n1, n2, n3, n4, n6, 0.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                        v.addUtilizador(user);
+                        System.out.println("CONTA CRIADA COM SUCESSO!");
+                        MENUPRINC(v, user);
+                        v.store_state();
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Input no formato errado!");
                 }
             }
             default -> System.out.print("\nOpção Inválida!");
         }
 }
 
-
+/*
+    public static void MENUDATA(Vintage v, Utilizador u) {
+        Scanner menuData = new Scanner(System.in);
+        System.out.println("DEFINA A DATA DO PROGRAMA:");
+        String data1 = menuData.next();
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate dataprograma = LocalDate.parse(data1, formatter1);
+        MENUPRINC(v,u);
+    }
+    */
     public static void MENUPRINC(Vintage v, Utilizador u) {
 
         Scanner menuP = new Scanner(System.in);
@@ -104,6 +119,7 @@ public class MENUS {
                 v.store_state();
                 System.out.println("ATÉ JÁ!");
                 menuP.close();
+                break;
 
             default:
                 System.out.print("\nOpção Inválida!");
@@ -114,56 +130,37 @@ public class MENUS {
     public static void MENUCOMPRAS(Vintage v, Utilizador u) {
         Scanner compras = new Scanner(System.in);
         System.out.print("\033[H\033[2J");
-        System.out.println("10-BACK..........................0-SAIR ");
+        System.out.println("10-BACK........1-TERMINAR DE COMPRAR..................0-SAIR ");
         System.out.println("                                        ");
         System.out.println("----COMPRAR-----");
-        for (Artigo artigo : v.getArtigos().values()) {
-            System.out.println(artigo);
-        }
 
+        boolean continuarComprando = true;
 
-        System.out.print("ID DO ARTIGO: ");
-        String artigoID = compras.nextLine();
-        Artigo a = v.getArtigos().get(artigoID);
-        if (a == null) {
-            System.out.println("Artigo não encontrado.");
-        } else {
-            //v.efectCompra(a.getId(), u);
-            v.addCarrinho(a,u.getEmail());
-            System.out.println("Artigo adicionado ao carrinho.");
-        }
+        while (continuarComprando) {
+            // Obtém a lista atualizada de artigos disponíveis para compra
+            List<Artigo> artigosDisponiveis = new ArrayList<>(v.getArtigos().values());
+            artigosDisponiveis.removeAll(u.getCarrinho());
 
-/*
-
-        while (true) {
-            System.out.println("SELECIONAR ARTIGO COM O ID:");
-
-
-            v.efectCompra(artigoID, u);
-        }
-*/
-        /*
-        System.out.println("SELECIONAR ARTIGO COM O ID:");
-        v.efectCompra(artigoID, u);
-            switch (artigoID) {
-                case "10" -> MENUPRINC(v, u);
-                case "0" -> {
-                    System.out.println("ATÉ JÁ!");
-                    compras.close();
-                }
-                default -> System.out.println("\nOpção Inválida!");
+            // Exibe a lista atualizada de artigos disponíveis
+            for (Artigo artigo : artigosDisponiveis) {
+                System.out.println(artigo);
             }
 
-         */
+            System.out.print("ID DO ARTIGO : ");
+            String artigoID = compras.nextLine();
+
+            if (artigoID.equals("0")) {
+                continuarComprando = false;
+            } else if (artigoID.equals("10")) {
+                MENUPRINC(v, u);
+            } else {
+                Artigo a = v.getArtigos().get(artigoID);
+                u.adicionarCarrinho(a);
+                v.deleteCarrinho(a);
+            }
+           // break; //AQUI
         }
-
-       // System.out.println("VALOR BASE: " + (v.getArtigos().get(artigoID)).calculaPreco());
-        /*
-        System.out.println("PORTES: " + v.getArtigos().get(artigoID).getTransportadora().calculaprecoexp());
-        v.addEncomenda(v.getArtigos().get(artigoID), );
-        */
-
-
+    }
 
     public static void MENUVENDER(Vintage v, Utilizador u) {
         Scanner vender = new Scanner(System.in);
@@ -202,7 +199,9 @@ public class MENUS {
                 String t2 = vender.next();
                 TShirt t = new TShirt (new Transportadora(n0), n1, n2, n3, n4, LocalDate.now(), n5, n6, b7, t1, t2);
                 //v.addArtigo(t);
+                u.adicionarProdutoAVenda(t);
                 v.addArtigoAVenda(t, u.getEmail());
+
 
             }
             case 2 -> {
@@ -214,6 +213,7 @@ public class MENUS {
                 String m3 = vender.next();
                 Mala m = new Mala(new Transportadora(n0), n1, n2, n3, n4, LocalDate.now(), n5, n6, b7,m1,m2, m3);
                 v.addArtigoAVenda(m, u.getEmail());
+                v.store_state();
 
             }
             case 3 -> {
@@ -225,6 +225,7 @@ public class MENUS {
                 String s3 = vender.next();
                 Sapatilha sapa1 = new Sapatilha(new Transportadora(n0),  n1, n2, n3, n4, LocalDate.now(), n5, n6, b7, s1, s2, s3);
                 v.addArtigoAVenda(sapa1, u.getEmail());
+                v.store_state();
             }
             default -> System.out.print("\nOpção Inválida!");
         }
@@ -269,8 +270,10 @@ public class MENUS {
 
             }
             case 2 -> {
+                /*
                 System.out.println("A TRANSPORTADORA COM MAIOR VOLUME DE FACTURAÇÃO É:");
                 System.out.println(v.TransportadoraMaisFacturou());
+                */
             }
 
             case 3 -> {
@@ -284,7 +287,7 @@ public class MENUS {
                 System.out.println("MAIORES COMPRADORES/VENDEDORES DO SISTEMA: ");
                 System.out.println("1- VENDEDORES");
                 System.out.println("2- COMPRADORES");
-                ;
+
                 int n8 = est.nextInt();
                 switch (n8) {
                     case 1 -> {
@@ -305,7 +308,6 @@ public class MENUS {
                             System.out.println("Vendedor: " + vendedor.getNome() + ", Valor de vendas: " + valorVendas);
                         }
 
-                        break;
                     }
 
                     case 2 -> {
@@ -326,7 +328,7 @@ public class MENUS {
                             System.out.println("Comprador: " + vendedor.getNome() + ", Valor de compras: " + valorVendas);
                         }
 
-                        break;
+
 
                     }
 
@@ -349,20 +351,20 @@ public class MENUS {
         Scanner conta = new Scanner(System.in);
         System.out.print("\033[H\033[2J");
 
-            System.out.println("10-BACK..........................0-SAIR ");
-            System.out.println("                                        ");
-            System.out.println("------DEFINIÇÕES DE CONTA-----");
-            System.out.println("1-EDITAR DADOS");
-            System.out.println("2-VER VENDAS");
-            System.out.println("3-VER FATURAS PRODUTOS ADQUIRIDOS");
-            System.out.println("4-VER PRODUTOS À VENDA");
-            System.out.println("5-VER FATURAS EMITIDAS");
+        System.out.println("10-BACK..........................0-SAIR ");
+        System.out.println("                                        ");
+        System.out.println("------DEFINIÇÕES DE CONTA-----");
+        System.out.println("1-EDITAR DADOS");
+        System.out.println("2-VER VENDAS");
+        System.out.println("3-VER FATURAS PRODUTOS ADQUIRIDOS");
+        System.out.println("4-VER PRODUTOS À VENDA");
+        System.out.println("5-VER FATURAS EMITIDAS");
+        System.out.println("6-VER CARRINHO");
 
 
+        System.out.println("SELECIONE OPÇÃO: ");
 
-            System.out.println("SELECIONE OPÇÃO: ");
-
-            int opcao1 = conta.nextInt();
+        int opcao1 = conta.nextInt();
 
         switch (opcao1) {
             case 1 -> {
@@ -440,7 +442,7 @@ public class MENUS {
                 System.out.println("---PRODUTOS ADQUIRIDOS----");
                 System.out.println("1- DEVOLVER ARTIGO COM O ID: ");
 
-                for(Artigo p : u.getProdutosAdquiridos()) {
+                for (Artigo p : u.getProdutosAdquiridos()) {
                     System.out.println(p);
                 }
 
@@ -470,7 +472,7 @@ public class MENUS {
                 System.out.println("                                        ");
                 System.out.println("-----PRODUTOS À VENDA--------");
 
-                for(Artigo p : u.getProdutosAVenda()) {
+                for (Artigo p : u.getProdutosAVenda()) {
                     System.out.println(p);
                 }
 
@@ -487,17 +489,97 @@ public class MENUS {
 
                 }
 
+            }
 
+            case 5 -> {
+                System.out.print("\033[H\033[2J");
+                System.out.println("10-BACK..........................0-SAIR ");
+                System.out.println("                                        ");
+                System.out.println("---VER FATURAS EMITADAS----");
+                System.out.println("1- DEVOLVER ARTIGO COM O ID: ");
+
+                for (Artigo p : u.getProdutosAdquiridos()) {
+                    System.out.println(p);
+                }
+
+                int opcao4 = conta.nextInt();
+
+                switch (opcao4) {
+
+                    case 10 -> MENUCONTA(v, u);
+
+                    case 0 -> {
+                        System.out.println("ATÉ JÁ!");
+                        conta.close();
+                    }
+                    default -> System.out.println("\nOpção Inválida!");
+
+                }
             }
-            case 10 -> MENUPRINC(v, u);
-            case 0 -> {
-                System.out.println("ATÉ JÁ!");
-                conta.close();
+
+            case 6 -> {
+                System.out.print("\033[H\033[2J");
+                System.out.println("10-BACK..........................0-SAIR ");
+                System.out.println("                                        ");
+                System.out.println("---VER CARRINHO----");
+
+                for (Artigo p : u.getCarrinho()) {
+                    System.out.println(p);
+                }
+
+                System.out.println("1 - TERMINAR COMPRA:");
+                System.out.println("2 - ADICIONAR ARTIGO");
+                System.out.println("3 - REMOVER ARTIGO");
+
+                int opcao4 = conta.nextInt();
+
+                switch (opcao4) {
+
+                    case 1 -> {
+
+                        System.out.println("\033[H\033[2J");
+                        System.out.println("----CARRINHO DE COMPRAS----");
+                        List<Artigo> carrinho = u.getCarrinho();
+                        for (Artigo artigo : carrinho) {
+                            System.out.println(artigo);
+                        }
+                        System.out.println("---------------------------");
+                        System.out.println("TOTAL: " + u.getTotalCarrinho(u.getCarrinho()) + "€");
+                        System.out.println("---------------------------");
+                        System.out.println("0-SAIR........10-BACK");
+
+                        Encomenda encomenda = new Encomenda();
+                        encomenda.setEstado("pendente");
+                        encomenda.setArtigos(u.getCarrinho());
+                        double precoFinal = encomenda.calcularPrecoEnc();
+                        encomenda.setPrecof(precoFinal);
+                        encomenda.setData(LocalDateTime.now());
+
+                       // System.out.println(encomenda);
+                    }
+                    case 2 -> {
+                        MENUCOMPRAS(v,u);
+                    }
+                    case 3 -> {
+                        System.out.println("REMOVER ARTIGO:");
+                        String a = conta.next();
+                        u.removeCarrinho(a);
+                    }
+
+
+                    case 10 -> MENUCONTA(v, u);
+                    case 0 -> {
+                        System.out.println("ATÉ JÁ!");
+                        conta.close();
+
+                    }
+                    default -> System.out.println("\nOpção Inválida!");
+                }
             }
-            default -> System.out.println("\nOpção Inválida!");
+
         }
-
     }
+
 
     public static Vintage read_state() {
         Vintage v;
@@ -519,6 +601,7 @@ public class MENUS {
         return v;
     }
 
+
     public static Vintage putLogin () {
         Vintage v = new Vintage();
         Scanner scanner = new Scanner(System.in);
@@ -528,10 +611,11 @@ public class MENUS {
         int op = scanner.nextInt();
 
         switch (op){
-            case 1:
+            case 1 ->
                 v = read_state();
-            case 2:
+            case 2 ->
                 v = SCRIPT.script();
+
         }
 
         return v;

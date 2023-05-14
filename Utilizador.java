@@ -84,8 +84,9 @@ public class Utilizador implements Serializable {
     public List<Artigo> getCarrinho() {return this.carrinho;}
     public void setCarrinho(List<Artigo> carrinho) {this.carrinho = carrinho;}
     public void adicionarProdutoAVenda(Artigo p) {
-        System.out.println(p);
-        this.produtosAVenda.add(p.clone());}
+        //System.out.println(p);
+        this.produtosAVenda.add(p.clone());
+    }
     public List<Artigo> adicionarProdutoAdquirido(Artigo p) {this.produtosAdquiridos.add(p.clone());
         return this.produtosAdquiridos;
     }
@@ -100,18 +101,27 @@ public class Utilizador implements Serializable {
         return this.carrinho;
     }
 
-    public Utilizador clone() {return new Utilizador(this);}
-
-
-/*
-    public boolean autenticarUsuario(String email, String senha, Map<String, String> hashusers) {
-        if (hashusers.containsKey(email) && hashusers.get(email).equals(senha)) {
-            return true;
-        } else {
-            return false;
+    public List<Artigo> removeCarrinho (String a ) {
+        for (Artigo b : this.carrinho) {
+            if (b.getId().equals(a)) {
+                this.carrinho.remove(b.clone());
+            }
         }
+        return this.carrinho;
     }
-*/
+
+
+    public double getTotalCarrinho(List<Artigo> a ) {
+        double res = 0.0;
+        for (Artigo b : a) {
+            res += b.getPreco();
+        }
+        return res;
+    }
+
+
+
+    public Utilizador clone() {return new Utilizador(this);}
 
 
     public boolean equals(Object o ) {
@@ -154,10 +164,18 @@ public class Utilizador implements Serializable {
 
                sb.append("\n[PRODUTOS VENDAS]: ");
                if (this.vendas != null) {
-               for (Artigo artigo : this.vendas) {
+                   for (Artigo artigo : this.vendas) {
+                       sb.append("\n").append(artigo);
+                   }
+               }
+
+               sb.append("\n[CARRINHO]:");
+               if (this.carrinho != null) {
+               for(Artigo artigo : this.carrinho) {
                sb.append("\n").append(artigo);
                }
                }
+
 
         return sb.toString();
     }
