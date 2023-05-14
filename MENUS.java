@@ -109,6 +109,7 @@ public class MENUS {
             System.out.println("2-VENDER");
             System.out.println("3-ESTATÍSTICAS");
             System.out.println("4-CONTA");
+            System.out.println("5-SALTAR NO TEMPO");
             System.out.println("0-SAIR");
             System.out.print("SELECIONE OPÇÃO: ");
 
