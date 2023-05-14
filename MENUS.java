@@ -130,7 +130,7 @@ public class MENUS {
     public static void MENUCOMPRAS(Vintage v, Utilizador u) {
         Scanner compras = new Scanner(System.in);
         System.out.print("\033[H\033[2J");
-        System.out.println("10-BACK........1-TERMINAR DE COMPRAR..................0-SAIR ");
+        System.out.println("10-BACK..........................0-SAIR ");
         System.out.println("                                        ");
         System.out.println("----COMPRAR-----");
 
@@ -158,7 +158,6 @@ public class MENUS {
                 u.adicionarCarrinho(a);
                 v.deleteCarrinho(a);
             }
-           // break; //AQUI
         }
     }
 
@@ -182,7 +181,7 @@ public class MENUS {
         double n5 = vender.nextDouble();
         System.out.println("NR DONOS:");
         int n6 = vender.nextInt();
-        System.out.println("RESPONDA COM S EM CASO AFIRMATIVO E N CASO CONTRÁRIO. PREMIUM:"); //MUDAR PARA BOOL
+        System.out.println("RESPONDA COM S EM CASO AFIRMATIVO E N CASO CONTRÁRIO. PREMIUM:");
         String n7 = vender.next();
         boolean b7;
         b7 = n7.equalsIgnoreCase("s");
@@ -201,6 +200,9 @@ public class MENUS {
                 //v.addArtigo(t);
                 u.adicionarProdutoAVenda(t);
                 v.addArtigoAVenda(t, u.getEmail());
+                v.addArtigo(t);
+                System.out.println("ARTIGO CRIADO COM SUCESSO");
+                MENUPRINC(v,u);
 
 
             }
@@ -214,6 +216,7 @@ public class MENUS {
                 Mala m = new Mala(new Transportadora(n0), n1, n2, n3, n4, LocalDate.now(), n5, n6, b7,m1,m2, m3);
                 v.addArtigoAVenda(m, u.getEmail());
                 v.store_state();
+                MENUPRINC(v,u);
 
             }
             case 3 -> {
@@ -226,7 +229,15 @@ public class MENUS {
                 Sapatilha sapa1 = new Sapatilha(new Transportadora(n0),  n1, n2, n3, n4, LocalDate.now(), n5, n6, b7, s1, s2, s3);
                 v.addArtigoAVenda(sapa1, u.getEmail());
                 v.store_state();
+                MENUPRINC(v,u);
             }
+
+            case 10 -> MENUPRINC(v, u);
+            case 0 -> {
+                System.out.println("ATÉ JÁ!");
+                vender.close();
+            }
+
             default -> System.out.print("\nOpção Inválida!");
         }
         v.store_state();
@@ -247,7 +258,6 @@ public class MENUS {
             System.out.println("3- LISTAR AS ENCOMENDAS FEITAS POR UM VENDEDOR");
             System.out.println("4- MAIORES COMPRADORES/VENDEDORES DO SISTEMA NUM DADO PERIODO");
             System.out.println("5- LUCRO DA VINTAGE");
-
 
             System.out.println("SELECIONE OPÇÃO: ");
 
@@ -436,23 +446,24 @@ public class MENUS {
 
             }
             case 3 -> {
+
                 System.out.print("\033[H\033[2J");
                 System.out.println("10-BACK..........................0-SAIR ");
                 System.out.println("                                        ");
                 System.out.println("---PRODUTOS ADQUIRIDOS----");
-                System.out.println("1- DEVOLVER ARTIGO COM O ID: ");
 
                 for (Artigo p : u.getProdutosAdquiridos()) {
                     System.out.println(p);
                 }
 
-                int opcao4 = conta.nextInt();
+                System.out.println("1- DEVOLVER ENCOMENDA COM O ID: ");
 
+                String opcao4 = conta.next();
                 switch (opcao4) {
 
 
-                    case 10 -> MENUCONTA(v, u);
-                    case 0 -> {
+                    case "10" -> MENUCONTA(v, u);
+                    case "0" -> {
                         System.out.println("ATÉ JÁ!");
                         conta.close();
                     }
@@ -460,10 +471,7 @@ public class MENUS {
 
                 }
 
-                /*
-                System.out.println("DEVOLVER ARTIGO COM O ID:");
-                int pd = conta.nextInt();
-                */
+
             }
 
             case 4 -> {
@@ -496,6 +504,7 @@ public class MENUS {
                 System.out.println("10-BACK..........................0-SAIR ");
                 System.out.println("                                        ");
                 System.out.println("---VER FATURAS EMITADAS----");
+                System.out.println(v.getEncomendas());
                 System.out.println("1- DEVOLVER ARTIGO COM O ID: ");
 
                 for (Artigo p : u.getProdutosAdquiridos()) {
@@ -543,10 +552,6 @@ public class MENUS {
                         for (Artigo artigo : carrinho) {
                             System.out.println(artigo);
                         }
-                        System.out.println("---------------------------");
-                        System.out.println("TOTAL: " + u.getTotalCarrinho(u.getCarrinho()) + "€");
-                        System.out.println("---------------------------");
-                        System.out.println("0-SAIR........10-BACK");
 
                         Encomenda encomenda = new Encomenda();
                         encomenda.setEstado("pendente");
@@ -555,7 +560,31 @@ public class MENUS {
                         encomenda.setPrecof(precoFinal);
                         encomenda.setData(LocalDateTime.now());
 
-                       // System.out.println(encomenda);
+                        System.out.println("---------------------------");
+                        System.out.println("TOTAL S/ PORTES: " + u.getTotalCarrinho(u.getCarrinho()) + "€");
+                        System.out.println("PRECO FINAL: " + encomenda.getPrecof());
+                        System.out.println("---------------------------");
+                        System.out.println("1-PAGAR");
+                        System.out.println("0-SAIR........10-BACK");
+
+
+                        int opcao7 = conta.nextInt();
+
+                        switch (opcao7) {
+                            case 1-> {
+                            v.pagamento(u,encomenda);
+                            v.addContaArtigoAquirido(encomenda,u.getEmail());
+                            MENUPRINC(v,u);
+
+                            }
+                            case 10 -> MENUCONTA(v, u);
+                            case 0 -> {
+                                System.out.println("ATÉ JÁ!");
+                                conta.close();
+
+                            }
+                        }
+
                     }
                     case 2 -> {
                         MENUCOMPRAS(v,u);
@@ -576,6 +605,12 @@ public class MENUS {
                     default -> System.out.println("\nOpção Inválida!");
                 }
             }
+            case 10 -> MENUPRINC(v, u);
+            case 0 -> {
+                System.out.println("ATÉ JÁ!");
+                conta.close();
+            }
+            default -> System.out.println("\nOpção Inválida!");
 
         }
     }

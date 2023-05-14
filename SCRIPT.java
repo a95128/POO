@@ -27,7 +27,7 @@ public class SCRIPT {
 
         Utilizador u1 = new Utilizador("ajrochaalves@gmail.com", "Ana", "Rua Nova", 12554, "123", 0.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
         Utilizador u2 = new Utilizador("simao@gmail.com", "Simao", "yuhaobd", 1234, "afdsfgfsdf", 10.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
-        Utilizador u3 = new Utilizador("diogo@gmail.com","Diogo","Rua Tibães",543,"diogo123",5.0,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>());
+        Utilizador u3 = new Utilizador("diogo@gmail.com","Diogo","Rua Tibães",543,"diogo123",10000.0,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>());
 
         Encomenda e1 = new Encomenda(new ArrayList<>(), 50.0, "Finalizada", LocalDateTime.now());
 

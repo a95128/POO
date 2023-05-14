@@ -74,6 +74,7 @@ public class Encomenda implements Serializable {
         return conta;
     }
 
+
     public double calcularPrecoEnc() {
         double preco = 0.0;
         int novos = 0;
@@ -85,6 +86,17 @@ public class Encomenda implements Serializable {
         }
         preco += novos*TSN + usados*TSU;
         return preco;
+    }
+
+    public double precoFINAL() {
+
+        double precoinic = calcularPrecoEnc();
+        double precoFINAL = 0.0;
+        for(Artigo a:  getArtigos()){
+            precoFINAL = precoinic + a.getTransportadora().calculaprecoexp(getNrArtigosPorCategoria(false), false) + a.getTransportadora().calculaprecoexp(getNrArtigosPorCategoria(true), true);
+        }
+        setPrecof(precoFINAL);
+        return precoFINAL;
     }
 
     // Método para verificar se é possivel devolver uma encomenda

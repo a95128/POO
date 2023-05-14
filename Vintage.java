@@ -98,6 +98,13 @@ public class Vintage implements Serializable {
         //System.out.println(util.getProdutosAVenda());
     }
 
+    public void addContaArtigoAquirido(Encomenda e,String u) {
+        Utilizador util = this.users.get(u);
+        for(Artigo a : e.getArtigos()) {
+            util.adicionarProdutoAdquirido(a);
+        }
+    }
+
     public void addVenda(Artigo a, String user) {
         Utilizador util = this.users.get(user);
         util.adicionarVenda(a);
@@ -114,6 +121,7 @@ public class Vintage implements Serializable {
             util.adicionarCarrinho(a);
         }
     }
+
 
     public List<Artigo> deleteCarrinho(Artigo a) {
         List<Artigo> comprass = new ArrayList<>();
@@ -161,6 +169,19 @@ public class Vintage implements Serializable {
             getUtilizadores().get(id);
         } else System.out.println("O UTILIZADOR NÃO EXISTE!");
 
+    }
+
+    public void pagamento(Utilizador u, Encomenda e) {
+        double res = 0.0;
+        if(u.getSaldo() < e.precoFINAL()) {
+            System.out.println("NÃO É POSSIVEL EFECTUAR COMPRA");
+        }
+        else {
+            res = u.getSaldo() - e.precoFINAL();
+            e.setEstado("Finalizada");
+            System.out.println("COMPRA EFECTUADA");
+        }
+        u.setSaldo(res);
     }
 
 

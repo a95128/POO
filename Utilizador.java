@@ -121,6 +121,7 @@ public class Utilizador implements Serializable {
 
 
 
+
     public Utilizador clone() {return new Utilizador(this);}
 
 
