@@ -8,4 +8,20 @@ public class UtilizadorException extends Exception {
         super(mes);
     }
 
+
 }
+
+/*
+public class ArtigoException extends Exception {
+
+    public ArtigoException() {
+        super();
+    }
+
+    public ArtigoException (String mes) {
+        super(mes);
+    }
+
+}
+*/
+

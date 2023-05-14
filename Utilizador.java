@@ -1,7 +1,5 @@
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 //ADICIONAR SALDO
 public class Utilizador implements Serializable {
@@ -17,6 +15,8 @@ public class Utilizador implements Serializable {
     private List<Artigo> vendas;
     private List<Artigo> carrinho;
 
+    //private Map<String, Encomenda> encomendas;
+
     public Utilizador() {
         this.id = UUID.randomUUID();
         this.email = " ";
@@ -29,6 +29,7 @@ public class Utilizador implements Serializable {
         this.produtosAdquiridos = new ArrayList<>();
         this.vendas = new ArrayList<>();
         this.carrinho = new ArrayList<>();
+        //this.encomendas = new HashMap<>();
     }
 
     public Utilizador (String e, String n, String m, int NIF,String p, double s, List<Artigo> a, List<Artigo> b, List<Artigo> d, List<Artigo> c) {
@@ -43,6 +44,7 @@ public class Utilizador implements Serializable {
         this.produtosAdquiridos = b;
         this.vendas = d;
         this.carrinho = c;
+        //this.encomendas = enc;
     }
 
         public Utilizador(Utilizador a){
@@ -57,6 +59,7 @@ public class Utilizador implements Serializable {
             this.produtosAdquiridos = a.getProdutosAdquiridos();
             this.vendas = a.getVendas();
             this.carrinho = a.getCarrinho();
+            //this.encomendas = a.getEncomendas();
     }
 
 
@@ -80,6 +83,16 @@ public class Utilizador implements Serializable {
     public void setProdutosAdquiridos(List<Artigo> pa) {this.produtosAdquiridos = pa;}
     public List<Artigo> getVendas() {return this.vendas;}
     public void setVendas(List<Artigo> vendas) {this.vendas = vendas;}
+/*
+    public Map<String, Encomenda> getEncomendas() {
+        return this.encomendas;
+    }
+
+    public void setEncomendas(Map<String, Encomenda> encomendas) {
+        this.encomendas = encomendas;
+    }
+    */
+
 
     public List<Artigo> getCarrinho() {return this.carrinho;}
     public void setCarrinho(List<Artigo> carrinho) {this.carrinho = carrinho;}
@@ -100,6 +113,8 @@ public class Utilizador implements Serializable {
     public List<Artigo> adicionarCarrinho (Artigo p) {this.carrinho.add(p.clone());
         return this.carrinho;
     }
+
+    //public Map<String,Encomenda> adicionarEncomenda (Encomenda e) {this.encomendas.put(e.getId(),e);}
 
     public List<Artigo> removeCarrinho (String a ) {
         for (Artigo b : this.carrinho) {

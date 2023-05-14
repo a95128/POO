@@ -223,6 +223,7 @@ public class Vintage implements Serializable {
 
 
 
+
     // ESTATISTICAS
 
 
@@ -322,8 +323,5 @@ public class Vintage implements Serializable {
 
         return vendasTotais;
     }
-
-
-
 
 }
