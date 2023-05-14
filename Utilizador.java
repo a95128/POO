@@ -112,6 +112,10 @@ public class Utilizador implements Serializable {
         return this.carrinho;
     }
 
+    public List<Artigo> adicionarEncomendasfinalizadas (Encomenda p) {this.encomendasFinalizadas.add(p.clone());
+        return this.carrinho;
+    }
+
 
 
     public Utilizador clone() {return new Utilizador(this);}
@@ -160,6 +164,7 @@ public class Utilizador implements Serializable {
     {
         if (this.vendas.remove(a)) this.produtosAVenda.add(a);
     }
+
 
     public boolean equals(Object o ) {
         if(this == o) return true;

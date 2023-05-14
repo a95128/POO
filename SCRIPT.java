@@ -25,9 +25,9 @@ public class SCRIPT {
         TShirt tshirt1 = new TShirt(t1, "Camisola verde", "Zara", 20.0, 10, LocalDate.of(2023, 4, 10), 2.0, 4, true, "S", "liSo");
         Mala m1 = new Mala(t1, "Prada basic", "Prada", 10500.0, 0.0, LocalDate.of(2020, 4, 10), 10.0, 1, true, 5.0, 3.0, "Pele");
 
-        Utilizador u1 = new Utilizador("ajrochaalves@gmail.com", "Ana", "Rua Nova", 12554, "123", 10000.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
+        Utilizador u1 = new Utilizador("ajrochaalves@gmail.com", "Ana", "Rua Nova", 12554, "123", 100000.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
         Utilizador u2 = new Utilizador("simao@gmail.com", "Simao", "yuhaobd", 1234, "afdsfgfsdf", 10.0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
-        Utilizador u3 = new Utilizador("diogo@gmail.com","Diogo","Rua Tibães",543,"diogo123",5.0,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
+        Utilizador u3 = new Utilizador("diogo@gmail.com","Diogo","Rua Tibães",543,"diogo123",1000.0,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
 
         Encomenda e1 = new Encomenda(new ArrayList<>(), 50.0, "Finalizada", LocalDateTime.now());
 

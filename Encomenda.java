@@ -106,6 +106,8 @@ public class Encomenda implements Serializable {
         return preco;
     }
 
+
+
     // Método para verificar se é possivel devolver uma encomenda
     public boolean devolve(DataUtilizador dataUtilizador) {
         LocalDateTime now = dataUtilizador.now();
@@ -122,7 +124,7 @@ public class Encomenda implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("ID: ").append(this.id)
-                .append("Artigos: ");
+                .append("\nArtigos: ");
         if (this.artigos != null) {
             for (Artigo artigo : artigos) {
                 sb.append("\n").append(artigo);

@@ -153,7 +153,7 @@ public class MENUS {
         } else {
             //v.efectCompra(a.getId(), u);
             v.addCarrinho(a,u.getEmail());
-            v.getArtigos().remove(a);
+            v.getArtigos().remove(a.getId());
 
             return "Artigo " + artigoID + " adicionado ao carrinho!";
         }
@@ -456,6 +456,11 @@ public class MENUS {
                 System.out.println("                                        ");
                 System.out.println("----------------VENDAS------------------");
                 System.out.println(u.getVendas());
+                for(Artigo a : u.getVendas()) {
+                    System.out.println(a);
+                }
+
+
                 int opcao4 = conta.nextInt();
 
                 switch (opcao4)
@@ -479,11 +484,11 @@ public class MENUS {
                 System.out.println("10-BACK..........................0-SAIR ");
                 System.out.println("                                        ");
                 System.out.println("---PRODUTOS ADQUIRIDOS----");
-                System.out.println("1- DEVOLVER ARTIGO");
+                System.out.println("1- DEVOLVER ARTIGO ");
 
-                for (Artigo p : u.getProdutosAdquiridos())
+                for (Encomenda e : u.getEncomendasFinalizadas())
                 {
-                    System.out.println(p);
+                    System.out.println(e);
                 }
 
                 int opcao4 = conta.nextInt();
@@ -568,6 +573,10 @@ public class MENUS {
                     case 1 -> {
                         v.pagamento(u, encomenda);
                         v.addContaArtigoAquirido(encomenda, u.getEmail());
+                        u.adicionarEncomendasfinalizadas(encomenda);
+                        for (Artigo artigo :  encomenda.getArtigos()) {
+                            v.Artigocomprado(artigo);
+                        }
                         MENUPRINC(v, u);
 
                     }

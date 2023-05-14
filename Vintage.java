@@ -120,9 +120,9 @@ public class Vintage implements Serializable {
         util.adicionarCarrinho(a);
     }
 
-    public void addContaArtigoAquirido(Encomenda e,String u) {
+    public void addContaArtigoAquirido(Encomenda e, String u) {
         Utilizador util = this.users.get(u);
-        for(Artigo a : e.getArtigos()) {
+        for (Artigo a : e.getArtigos()) {
             util.adicionarProdutoAdquirido(a);
         }
     }
@@ -131,8 +131,7 @@ public class Vintage implements Serializable {
         this.users.remove(u);
     }
 
-    public Utilizador autenticarUtilizador(String email, String senha) throws UtilizadorException
-    {
+    public Utilizador autenticarUtilizador(String email, String senha) throws UtilizadorException {
         if (users.containsKey(email)) {
             Utilizador u = users.get(email);
             if (u.getPassword().equals(senha)) {
@@ -155,16 +154,13 @@ public class Vintage implements Serializable {
         }
     }
 
-    public boolean devolucao(String id, Utilizador comprador)
-    {
+    public boolean devolucao(String id, Utilizador comprador) {
         Encomenda encomenda = comprador.getEncomendaByID(id);
 
         // ver se a encomenda existe
-        if(encomenda !=  null)
-        {
+        if (encomenda != null) {
             // se existe, verificar se se pode devolver (feita à menos de dois dias)
-            if(encomenda.devolve(this.dataUtilizadorAtivo))
-            {
+            if (encomenda.devolve(this.dataUtilizadorAtivo)) {
                 List<Artigo> artigosComprados = encomenda.getArtigos();
 
                 // remover dos artigos comprados pelo comprador
@@ -172,15 +168,12 @@ public class Vintage implements Serializable {
                 // remover das encomendas feitas pelo comprador
                 comprador.removeEncomenda(encomenda);
                 // passar os artigos de "vendidos" para "à venda"
-                for(Artigo artigo : artigosComprados)
-                {
+                for (Artigo artigo : artigosComprados) {
                     // procurar o vendedor que vendeu este artigo
                     // faria mais sentido se a encomenda viesse identificada com o vendedor que a vendeu e com o user
                     // que a comprou
-                    for(Utilizador u : this.users.values())
-                    {
-                        if(u.vendeuArtigo(artigo))
-                        {
+                    for (Utilizador u : this.users.values()) {
+                        if (u.vendeuArtigo(artigo)) {
                             // remover dos artigos vendidos e adicionar aos artigos à venda
                             u.renovarVenda(artigo);
                             break;
@@ -188,10 +181,19 @@ public class Vintage implements Serializable {
                     }
                 }
                 return true;
+            } else return false;
+        } else return false;
+    }
+
+    public void Artigocomprado (Artigo artigoComprado) {
+        for (Utilizador vendedor : users.values()) {
+            List<Artigo> artigosAVenda = vendedor.getProdutosAVenda();
+            if (artigosAVenda.contains(artigoComprado)) {
+                artigosAVenda.remove(artigoComprado);
+                vendedor.getProdutosAVenda().add(artigoComprado);
+                break;
             }
-            else return false;
         }
-        else return false;
     }
 
 
